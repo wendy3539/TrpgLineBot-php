@@ -57,7 +57,7 @@ function KeyWordReply($inputStr,$keyWord,$manualUrl,$textReplyUrl,$userName) {
 	//可以是為一個使用外聯檔案的範例
 	if(stristr($inputStr, '更新與公告') != false) {
 		
-		$file = fopen("https://www.dropbox.com/s/wvse1w4nl3ks51o/text.txt?dl=0", "r");
+		$file = fopen("https://www.dropbox.com/s/wvse1w4nl3ks51o/text.txt?dl=1", "r");
 		$reply = '';
 
 		//輸出文本中所有的行，直到文件結束為止。
