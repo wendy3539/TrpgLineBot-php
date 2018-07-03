@@ -74,6 +74,10 @@
   {
     "chack": ["COCO","coco"],
     "img": ["https://i.imgur.com/mueZD6b.png"]
+  },
+  {
+    "chack": ["髒"],
+    "img": ["https://imgur.com/fosOjpY.png"]
   }
 
 
