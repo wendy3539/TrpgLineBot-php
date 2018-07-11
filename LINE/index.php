@@ -32,7 +32,7 @@ $manualUrl = getenv('MANUAL_URL');
 $textReplyUrl = getenv('TEXT_REPLY_URL');
 $imgsReplyUrl = getenv('IMGS_REPLY_URL');
 $yababangUrl = getenv('YABABANG_URL');
-
+//GOOGLE表單
 $bot = new LINEBotTiny($channelAccessToken, $channelSecret);
 $userName = '你';
 
@@ -143,7 +143,7 @@ class MutiMessage{
 
 
 
-
+//這邊才開始寫接收到訊息的主程式
 foreach ($bot->parseEvents() as $event) {
 		
     switch ($event['type']) {
@@ -288,6 +288,9 @@ function parseInput ($inputStr){
 		
 	}else if(preg_match ("/b/i", $inputStr) !=false){
 		return bDice($inputStr);
+
+	}else if("判" == $inputStr){
+		return nomalDiceRoller("2d6");
 	}
 	
 	
