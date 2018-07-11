@@ -14,7 +14,6 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-
 require_once('./LINEBotTiny.php');
 require_once('./nomalReply.php');
 require_once('./Dice/Dice_CoC7th.php');
@@ -22,7 +21,6 @@ require_once('./Dice/Dice_nomalDice.php');
 require_once('./Dice/Dice_pbta.php');
 require_once('./Dice/Dice_extraDice.php');
 require_once('./Dice/Dice_test.php');
-
 //主要的全域變數，只有簡易的API，覺得難過香菇
 //試著手動加入了getProfile的功能…不知道是否用得到
 $channelAccessToken = getenv('LINE_CHANNEL_ACCESSTOKEN');
@@ -35,8 +33,6 @@ $yababangUrl = getenv('YABABANG_URL');
 //GOOGLE表單
 $bot = new LINEBotTiny($channelAccessToken, $channelSecret);
 $userName = '你';
-
-
 //建立文字訊息的函數
 function buildTextMessage($inputStr){	
 	settype($inputStr, "string");
@@ -50,7 +46,6 @@ function buildTextMessage($inputStr){
         );
 	return $message;
 }
-
 //建立圖片訊息的函數
 function buildImgMessage($inputStr){	
 	settype($inputStr, "string");
@@ -65,7 +60,6 @@ function buildImgMessage($inputStr){
         );
 	return $message;
 }
-
 //建立貼圖訊息的函數
 function buildStickerMessage($packageId, $stickerId){	
 	error_log("準備回傳".$packageId."之".$stickerId."貼圖");
@@ -79,11 +73,8 @@ function buildStickerMessage($packageId, $stickerId){
         );
 	return $message;
 }
-
-
 //建立複數訊息，的物件
 class MutiMessage{
-
 	public function send($inputArr){	
 		//settype($inputStr, "string");
 		error_log("回傳複數訊息");
@@ -140,9 +131,6 @@ class MutiMessage{
 	}
 	
 }
-
-
-
 //這邊才開始寫接收到訊息的主程式
 foreach ($bot->parseEvents() as $event) {
 		
@@ -195,7 +183,6 @@ foreach ($bot->parseEvents() as $event) {
 							'messages' => $messages
 							)
 						);	
-
                 	}
                     break;
                 
@@ -253,7 +240,6 @@ foreach ($bot->parseEvents() as $event) {
             break;
     }
 };
-
 //這是基本判斷式
 function parseInput ($inputStr){
 	global $userName;
@@ -263,10 +249,8 @@ function parseInput ($inputStr){
 	global $imgsReplyUrl;
 	global $yababangUrl;
 	
-
 	//error_log("訊息【".$inputStr."】進入parseInput");
 	$inputStr = strtolower($inputStr);
-
 	//preg_match ( "/A/" , B)。A是要比對的關鍵字（正則），B是被比對的字串
 	if (preg_match ("/dvtest/i", $inputStr)){
 		return DvTest ($inputStr,$userName,$textReplyUrl,$imgsReplyUrl);
@@ -288,9 +272,26 @@ function parseInput ($inputStr){
 		
 	}else if(preg_match ("/b/i", $inputStr) !=false){
 		return bDice($inputStr);
-
-	}else if("判" == $inputStr){
-		return nomalDiceRoller("2d6");
+	}else if(stristr($inputStr, '判') !=false)
+	{
+ 	    if(substr($inputStr,0,4) == "判+")
+		{
+			return nomalDiceRoller("2d6".'+'.substr($inputStr,4,strlen($inputStr)) );
+		}else if (substr($inputStr,0,4) == '判-') 
+		{
+			return nomalDiceRoller("2d6".'-'.substr($inputStr,4,strlen($inputStr)) ) ;
+		}
+	
+	}else if(stristr($inputStr, '*') !=false)
+	{
+		if(substr($inputStr,0,2 ) == '*+')
+		{
+			return nomalDiceRoller("2d6".'+'.substr($inputStr,2,strlen($inputStr)) );
+		}
+		else if (substr($inputStr,0,2 ) == '*-') 
+		{
+			return nomalDiceRoller("2d6".'-'.substr($inputStr,2,strlen($inputStr)) );
+		}
 	}
 	
 	
@@ -298,11 +299,7 @@ function parseInput ($inputStr){
 	return null;
 	}
 }
-
-
 function DvTest ($inputStr,$userName,$textReplyUrl,$imgsReplyUrl){
-
-
 	error_log("進入DvTest");
 	
 	if(preg_match ("/muti|複數|多重/i", $inputStr) !=false){
@@ -360,7 +357,6 @@ function DvTest ($inputStr,$userName,$textReplyUrl,$imgsReplyUrl){
 	
 	$reply = chop($reply ,'；');
 	
-
 	//抓圖片關鍵字
 	$reply = $reply."\n\n《圖片關鍵字列表》\n";
 	
