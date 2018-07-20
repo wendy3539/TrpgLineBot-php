@@ -22,6 +22,7 @@ require_once('./Dice/Dice_nomalDice.php');
 require_once('./Dice/Dice_pbta.php');
 require_once('./Dice/Dice_extraDice.php');
 require_once('./Dice/Dice_test.php');
+require_once('./RulesCustomize.php');
 
 //主要的全域變數，只有簡易的API，覺得難過香菇
 //試著手動加入了getProfile的功能…不知道是否用得到
@@ -157,8 +158,7 @@ foreach ($bot->parseEvents() as $event) {
 				$userId = $source['userId'];
 				error_log("群組ID：".$groupId);
 				if($userId != null){
-								
-					$userName = $bot->getGroupProfile($groupId,$userId)['displayName'];
+					$userName = $bot->getProfile($source['userId'])['displayName'];							
 					error_log("訊息發送人：".$userName);
 					}
 				else{
@@ -303,9 +303,14 @@ function parseInput ($inputStr){
 			return nomalDiceRoller("2d6".'-'.substr($inputStr,4,strlen($inputStr)) ) ;
 
 		}
+
 		else if($inputStr=="判")
 		{
 			return nomalDiceRoller("2d6");
+		}
+		else
+		{
+			return Rules_Operating($inputStr,$userName);		
 		}
 
 	
@@ -324,11 +329,33 @@ function parseInput ($inputStr){
 		{
 			return nomalDiceRoller("2d6");
 		}
+
+	}else if(stristr($inputStr, '*') !=false)
+	{
+		if(substr($inputStr,0,2 ) == '*+')
+		{
+			return nomalDiceRoller("2d6".'+'.substr($inputStr,2,strlen($inputStr)) );
+		}
+		else if (substr($inputStr,0,2 ) == '*-') 
+		{
+			return nomalDiceRoller("2d6".'-'.substr($inputStr,2,strlen($inputStr)) );
+		}
+		else if($inputStr=="*")
+		{
+			return nomalDiceRoller("2d6");
+		}
+	
+	}else if($inputStr=="123")
+	{
+
+          return buildTextMessage($userName);
 	}
-	
-	
+	else if($inputStr=="456")
+	{
+		return Rules_Operating($inputStr,$userName);
+	}
 	else {
-	return null;
+		return null;
 	}
 }
 
