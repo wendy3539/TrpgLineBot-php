@@ -36,7 +36,7 @@ $yababangUrl = getenv('YABABANG_URL');
 //GOOGLE表單
 $bot = new LINEBotTiny($channelAccessToken, $channelSecret);
 $userName = '你';
-
+$userId ='無';
 
 //建立文字訊息的函數
 function buildTextMessage($inputStr){	
@@ -158,7 +158,8 @@ foreach ($bot->parseEvents() as $event) {
 				$userId = $source['userId'];
 				error_log("群組ID：".$groupId);
 				if($userId != null){
-					$userName = $bot->getProfile($source['userId'])['displayName'];							
+					$userName = $bot->getProfile($source['userId'])['displayName'];
+					$userId = $source['userId'];							
 					error_log("訊息發送人：".$userName);
 					}
 				else{
@@ -167,6 +168,7 @@ foreach ($bot->parseEvents() as $event) {
 				}
 			if($source['type'] == "user"){
 				$userName = $bot->getProfile($source['userId'])['displayName'];
+				$userId = $source['userId'];
 				error_log("訊息發送人：".$userName);
 				}
 			
@@ -256,6 +258,7 @@ foreach ($bot->parseEvents() as $event) {
 
 //這是基本判斷式
 function parseInput ($inputStr){
+	global $userId;
 	global $userName;
 	global $keyWord;
 	global $manualUrl;
@@ -352,7 +355,7 @@ function parseInput ($inputStr){
 	}
 	else if($inputStr=="456")
 	{
-		return Rules_Operating($inputStr,$userName);
+		return buildTextMessage($userId);
 	}
 	else {
 		return null;
