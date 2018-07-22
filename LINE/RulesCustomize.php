@@ -6,7 +6,7 @@ function Rules_Operating($inputStr,$userName) {
 		$googledataspi = "https://spreadsheets.google.com/feeds/list/1Hux0vPFA47hZgjPYcoHvMzHP4Q_azPZYDZKnD6H5r78/od6/public/values?alt=json";
 		$json = file_get_contents($googledataspi);
 	    $data = json_decode($json, true); 
-	    $store_text='';
+	    $skill='';
 
 	    foreach ($data['feed']['entry'] as $item) 
 	    {
@@ -45,6 +45,22 @@ function Rules_Operating($inputStr,$userName) {
 				{
 				     return nomalDiceRoller_Customize("2d6".$data['feed']['entry'][$序號]['gsx$精神加值']['$t'],$inputStr,$player);
 				}	    		
+				else if($inputStr=='判一')
+				{
+					 $skill = $data['feed']['entry'][$序號]['gsx$a攻擊招式']['$t'];
+				     return nomalDiceRoller_Attack($data['feed']['entry'][$序號]['gsx$a攻擊數值']['$t'],$inputStr,$player,$skill);
+				}				
+				else if($inputStr=='判二')
+				{
+					 $skill = $data['feed']['entry'][$序號]['gsx$b攻擊招式']['$t'];
+				     return nomalDiceRoller_Attack($data['feed']['entry'][$序號]['gsx$b攻擊數值']['$t'],$inputStr,$player,$skill);
+				}
+				else if($inputStr=='判三')
+				{
+					 $skill = $data['feed']['entry'][$序號]['gsx$c攻擊招式']['$t'];
+				     return nomalDiceRoller_Attack($data['feed']['entry'][$序號]['gsx$c攻擊數值']['$t'],$inputStr,$player,$skill);
+				}
+
 
 	    	}
 
