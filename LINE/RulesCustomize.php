@@ -1,22 +1,15 @@
 <?php
-
 function Rules_Operating($inputStr,$userName) { 
-
-
 		$googledataspi = "https://spreadsheets.google.com/feeds/list/1Hux0vPFA47hZgjPYcoHvMzHP4Q_azPZYDZKnD6H5r78/od6/public/values?alt=json";
 		$json = file_get_contents($googledataspi);
 	    $data = json_decode($json, true); 
 	    $skill='';
-
 	    foreach ($data['feed']['entry'] as $item) 
 	    {
 	    	if($userName == $item['gsx$玩家名稱']['$t'])
 	    	{
-
 				$player = $item['gsx$姓名']['$t'];
-
 	    		$序號 = $item['gsx$序號']['$t'];
-
 				if($inputStr=='判資料')
 				{
 				     return  buildTextMessage($data['feed']['entry'][$序號]['content']['$t']);
@@ -44,7 +37,11 @@ function Rules_Operating($inputStr,$userName) {
 				else if($inputStr=='判精'||$inputStr=='判精神')
 				{
 				     return nomalDiceRoller_Customize("2d6".$data['feed']['entry'][$序號]['gsx$精神加值']['$t'],$inputStr,$player);
-				}	    		
+				}	
+				else if($inputStr=='判防')
+				{
+				     return nomalDiceRoller_Customize("0d1".$data['feed']['entry'][$序號]['gsx$防禦數值']['$t'],$inputStr,$player);
+				}	  				
 				else if($inputStr=='判一')
 				{
 					 $skill = $data['feed']['entry'][$序號]['gsx$a攻擊招式']['$t'];
@@ -60,13 +57,8 @@ function Rules_Operating($inputStr,$userName) {
 					 $skill = $data['feed']['entry'][$序號]['gsx$c攻擊招式']['$t'];
 				     return nomalDiceRoller_Attack($data['feed']['entry'][$序號]['gsx$c攻擊數值']['$t'],$inputStr,$player,$skill);
 				}
-
-
 	    	}
-
-
 		}	
 	
-
 		return null;
 }
