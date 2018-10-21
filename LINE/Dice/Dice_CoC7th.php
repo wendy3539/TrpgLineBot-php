@@ -147,6 +147,165 @@ function CoC7th($inputStr){
           return buildTextMessage($ReStr);	
 }
 
+
+function CoC7th_DNF($inputStr){
+	error_log("是【CoC7th】啦，媽ㄉ發科！");
+	$inputStr = strtolower((string)$inputStr);
+  
+  //先判斷是不是要創角
+
+  if (preg_match ("/創角|crt/", $inputStr) != false ){return ccCreate($inputStr);}
+  
+  //隨機產生角色背景
+  if (preg_match ("/bg/", $inputStr) != false ){return ccbg();}
+  
+  
+  
+  //接下來就是主要的擲骰部分啦！
+  //如果不是正確的格式，直接跳出
+  
+//	if(preg_match ("/<=/", $inputStr) == false && preg_match ("/cc>/", $inputStr) == false){
+//		error_log("取出值不符合骰子格式");
+//		return null;
+//	}	
+  
+  
+  //記錄檢定要求值，簡單來說就是取 = 後的「整數」部分，parseInt就是強制取整
+	$chack = (int)explode("dd",$inputStr)[1];
+		
+  
+  //設定回傳訊息
+	$ReStr = "地下城冒險擲骰：\n(1D100<=".$chack.") → ";
+
+  //先骰兩次十面骰作為起始值。為什麼要這樣呢，因為獎懲骰的部分十面骰需要重骰，這樣到時候會簡單一點。
+	$TenRoll = Dice(10) ;
+	$OneRoll = Dice(10) - 1;
+
+  //把剛剛的十面骰組合成百面
+	$firstRoll = $TenRoll*10 + $OneRoll;
+	if ($firstRoll > 100) {$firstRoll = $firstRoll - 100;}
+
+	
+	//先設定最終結果等於第一次擲骰
+	$finalRoll = $firstRoll;
+          
+  /*
+  //判斷是否為成長骰
+  if(preg_match ("/^cc>\d+/", $inputStr) != false){
+	error_log("是成長骰啦，媽ㄉ發科！");	  
+    $chack = (int)explode(">",$inputStr)[1];
+	
+    if ($finalRoll>$chack||$finalRoll>95) {
+      $plus =  Dice(10);
+      $ReStr = "CoC7th擲骰【技能成長】：\n(1D100>".$chack.") → ".$finalRoll." → 成功成長".$plus."點\n最終值為：".$chack."+".$plus."=".($chack + $plus);
+      return buildTextMessage($ReStr);
+    }
+    else if ($finalRoll<=$chack) {
+      $ReStr = "CoC7th擲骰【技能成長】：\n(1D100>".$chack.") → ".$finalRoll." → 沒有成長";
+      return buildTextMessage($ReStr);
+    }
+    else return null;
+  }
+
+
+  //判斷是否為獎懲骰
+  $BPDice = null;
+  
+  //if(inputStr.match(/^cc\(-?[12]\)/)!=null) BPDice = parseInt(inputStr.split("(",2)[1]) ;
+	if(preg_match ("/^cc\(-?\d+\)/", $inputStr) != false){$BPDice = (int)explode("(",$inputStr)[1];}		
+	if(abs($BPDice) != 1 && abs($BPDice) != 2 && $BPDice != null) {return buildTextMessage("CoC7th的獎懲骰，允許的範圍是一到兩顆哦。");}
+  
+  
+  //如果是獎勵骰
+	if($BPDice != null){  
+		$tempStr = $firstRoll;
+		
+		for ( $i = 1; $i <= abs($BPDice); $i++ ){
+			$OtherTenRoll = Dice(10);
+			$OtherRoll = $OtherTenRoll.$OneRoll;
+      		if ((int)$OtherRoll > 100) {$OtherRoll = (int)$OtherRoll - 100;}
+      
+		$tempStr = $tempStr."、".$OtherRoll;
+		}
+		
+		$countArr = explode("、",$tempStr);
+	
+		if ($BPDice>0){
+			$finalRoll = min($countArr);
+			$ReStr = "CoC7th擲骰【獎勵骰取低】：\n(1D100<=".$chack.") → ";
+		}
+		if ($BPDice<0) {
+			$finalRoll = max($countArr);
+			$ReStr = "CoC7th擲骰【懲罰骰取高】：\n(1D100<=".$chack.") → ";
+		}
+		$ReStr = $ReStr.$tempStr." \n→ ";      
+	}  
+	*/
+
+    //結果判定
+	if ($finalRoll <= 20){$ReStr = $ReStr.$finalRoll." → 爆擊！";}
+	else
+	if ($finalRoll <= $chack){$ReStr = $ReStr.$finalRoll." → 成功!";}
+	else
+	{$ReStr = $ReStr.$finalRoll." → 失敗!" ;}
+
+	
+    /*
+	if ($finalRoll == 100){$ReStr = $ReStr.$finalRoll." → 大失敗！";}
+	else
+	if ($finalRoll <= 99 && $finalRoll > 95 && $chack < 50){$ReStr = $ReStr.$finalRoll." → 啊！大失敗！";}
+    else
+	if ($finalRoll <= $chack/5){$ReStr = $ReStr.$finalRoll." → 極限成功";}
+	else
+	if ($finalRoll <= $chack/2){$ReStr = $ReStr.$finalRoll." → 困難成功";}
+	else
+	if ($finalRoll <= $chack){$ReStr = $ReStr.$finalRoll." → 通常成功";}
+	else  
+	{$ReStr = $ReStr.$finalRoll." → 失敗" ;}
+
+	//浮動大失敗運算
+	if ($finalRoll <= 99 && $finalRoll > 95 && $chack >= 50 ){
+		if($chack/2 < 50){$ReStr = $ReStr + "\n（若要求困難成功則為大失敗）";}
+            else
+              if(chack/5 < 50){$ReStr = $ReStr + "\n（若要求極限成功則為大失敗）";}
+          }  
+
+	if(stristr(strtolower($ReStr),"啊！大失敗") != false){
+		$fumbleImgArr =Array(
+			"https://i.imgur.com/ju9UQzA.png",
+			"https://i.imgur.com/nWxGZyz.png",
+			"https://i.imgur.com/cq0WGxH.png");
+			
+		$messages = new MutiMessage();
+		
+		$replyArr = Array(
+			$messages->text($ReStr),
+			$messages->img($fumbleImgArr[Dice(count($fumbleImgArr))-1])
+		);
+		
+		return $messages->send($replyArr);
+	}
+	
+	if(stristr(strtolower($ReStr),"恭喜！大成功") != false){
+		$CriImgArr =Array(
+			"https://i.imgur.com/jevHZqa.png");
+			
+		$messages = new MutiMessage();
+		
+		$replyArr = Array(
+			$messages->text($ReStr),
+			$messages->img($CriImgArr[Dice(count($CriImgArr))-1])
+		);
+		
+		return $messages->send($replyArr);
+	}
+	*/
+	
+          return buildTextMessage($ReStr);	
+}
+
+
+
 function ccbg(){
 	error_log("是ccbg啦，媽ㄉ發科！");
 	
@@ -314,4 +473,3 @@ function ccCreate($inputStr){
   } 
   
 }
-
