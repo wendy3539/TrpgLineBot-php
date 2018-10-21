@@ -22,7 +22,6 @@ require_once('./Dice/Dice_nomalDice.php');
 require_once('./Dice/Dice_pbta.php');
 require_once('./Dice/Dice_extraDice.php');
 require_once('./Dice/Dice_test.php');
-require_once('./RulesCustomize.php');
 
 //主要的全域變數，只有簡易的API，覺得難過香菇
 //試著手動加入了getProfile的功能…不知道是否用得到
@@ -33,10 +32,10 @@ $manualUrl = getenv('MANUAL_URL');
 $textReplyUrl = getenv('TEXT_REPLY_URL');
 $imgsReplyUrl = getenv('IMGS_REPLY_URL');
 $yababangUrl = getenv('YABABANG_URL');
-//GOOGLE表單
+
 $bot = new LINEBotTiny($channelAccessToken, $channelSecret);
 $userName = '你';
-$userId ='無';
+
 
 //建立文字訊息的函數
 function buildTextMessage($inputStr){	
@@ -144,7 +143,7 @@ class MutiMessage{
 
 
 
-//這邊才開始寫接收到訊息的主程式
+
 foreach ($bot->parseEvents() as $event) {
 		
     switch ($event['type']) {
@@ -158,8 +157,8 @@ foreach ($bot->parseEvents() as $event) {
 				$userId = $source['userId'];
 				error_log("群組ID：".$groupId);
 				if($userId != null){
-					$userName = $bot->getProfile($source['userId'])['displayName'];
-					$userId = $source['userId'];							
+								
+					$userName = $bot->getGroupProfile($groupId,$userId)['displayName'];
 					error_log("訊息發送人：".$userName);
 					}
 				else{
@@ -168,7 +167,6 @@ foreach ($bot->parseEvents() as $event) {
 				}
 			if($source['type'] == "user"){
 				$userName = $bot->getProfile($source['userId'])['displayName'];
-				$userId = $source['userId'];
 				error_log("訊息發送人：".$userName);
 				}
 			
@@ -258,7 +256,6 @@ foreach ($bot->parseEvents() as $event) {
 
 //這是基本判斷式
 function parseInput ($inputStr){
-	global $userId;
 	global $userName;
 	global $keyWord;
 	global $manualUrl;
@@ -291,74 +288,11 @@ function parseInput ($inputStr){
 		
 	}else if(preg_match ("/b/i", $inputStr) !=false){
 		return bDice($inputStr);
-
-	}else if(stristr($inputStr, '判') !=false)
-	{
-
- 	    if(substr($inputStr,0,4) == "判+")
-		{
-
-			return nomalDiceRoller("2d6".'+'.substr($inputStr,4,strlen($inputStr)) );
-
-		}else if (substr($inputStr,0,4) == '判-') 
-		{
-
-			return nomalDiceRoller("2d6".'-'.substr($inputStr,4,strlen($inputStr)) ) ;
-
-		}
-
-		else if($inputStr=="判")
-		{
-			return nomalDiceRoller("2d6");
-		}
-		else
-		{
-			return Rules_Operating($inputStr,$userName);		
-		}
-
-	
-
-	}else if(stristr($inputStr, '*') !=false)
-	{
-		if(substr($inputStr,0,2 ) == '*+')
-		{
-			return nomalDiceRoller("2d6".'+'.substr($inputStr,2,strlen($inputStr)) );
-		}
-		else if (substr($inputStr,0,2 ) == '*-') 
-		{
-			return nomalDiceRoller("2d6".'-'.substr($inputStr,2,strlen($inputStr)) );
-		}
-		else if($inputStr=="*")
-		{
-			return nomalDiceRoller("2d6");
-		}
-
-	}else if(stristr($inputStr, '*') !=false)
-	{
-		if(substr($inputStr,0,2 ) == '*+')
-		{
-			return nomalDiceRoller("2d6".'+'.substr($inputStr,2,strlen($inputStr)) );
-		}
-		else if (substr($inputStr,0,2 ) == '*-') 
-		{
-			return nomalDiceRoller("2d6".'-'.substr($inputStr,2,strlen($inputStr)) );
-		}
-		else if($inputStr=="*")
-		{
-			return nomalDiceRoller("2d6");
-		}
-	
-	}else if($inputStr=="123")
-	{
-
-          return buildTextMessage($userName);
 	}
-	else if($inputStr=="456")
-	{
-		return buildTextMessage($userId);
-	}
+	
+	
 	else {
-		return null;
+	return null;
 	}
 }
 
